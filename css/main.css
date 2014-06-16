@@ -19,6 +19,11 @@ html {
     -ms-touch-action:none;
 }
 
+#map {
+    height: 300px;
+    width: 300px;
+}
+
 img { 
     border:none; 
 }
