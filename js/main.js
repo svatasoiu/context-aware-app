@@ -42,3 +42,57 @@ function beepOnce()
 {
     intel.xdk.notification.beep(1);
 } 
+
+$(document).ready(function () {
+    var options = { frequency: 150, adjustForRotation: false };
+
+    //function that modifies the position of the arrow
+    function onsuccess(acceleration) 
+    {
+        var Acceleration_X = acceleration.x;
+        var Acceleration_Y = acceleration.y;
+        $("#acc_x").html("Acc X: " + Acceleration_X);
+        $("#acc_y").html("Acc Y: " + Acceleration_Y);
+    };
+
+    intel.xdk.accelerometer.watchAcceleration(onsuccess, options);  
+    
+    var suc = function(p){
+        if (p.coords.latitude != undefined)
+        {
+            var currentLatitude = p.coords.latitude;
+            var currentLongitude = p.coords.longitude;
+            $("#geo_lat").html("Geo Lat: " + currentLatitude);
+            $("#geo_long").html("Geo Long: " + currentLongitude);
+            
+            $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations',
+
+              {"q": {"loc": { "$nearSphere" : [ currentLongitude, currentLatitude ] ,
+                             "$maxDistance" : 0.001 }},
+//                      {"$near": [currentLatitude, currentLongitude],
+//                         "$maxDistance": 0.0001}
+               "apiKey": "510d8ebde4b0a39e79ee5a83",
+               "l": 5},
+              function (data) {
+                 $("#results").html(JSON.stringify(data)); 
+//                 alert("retrieved"); 
+              }
+            );
+        }
+
+    };
+    var fail = function(){ 
+        alert("geolocation failed"); 
+        getLocation();
+    };
+    intel.xdk.geolocation.watchPosition(suc, fail);
+
+//    $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations',
+//              {q: {"loc": {"$near": [5,5]}}, apiKey: "510d8ebde4b0a39e79ee5a83"},
+//              function (data) {
+//                 $("#results").html(JSON.stringify(data)); 
+//                 alert("retrieved"); 
+//              }
+//    );
+    
+});
