@@ -40,7 +40,10 @@ function onDeviceReady()
     };
 
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    currMarker.setMap(map);
+//    currMarker.setMap(map);
+//    currMarker.setIcon("../images/Google Maps Marker Blue.png");
+    currMarker = new google.maps.Marker({map: map, icon: 'http://maps.gpsvisualizer.com/google_maps/icons/google/blue.png'});
+    
     attachSecretMessage(currMarker, "Current Position");
     
     var suc = function(p){
@@ -54,6 +57,7 @@ function onDeviceReady()
             
             var position = new google.maps.LatLng(currentLatitude, currentLongitude);
             currMarker.setPosition(position);
+            map.setCenter(position);
             
             retrieveNearbyPoints(currentLatitude, currentLongitude, 1, map);
         }
@@ -73,26 +77,26 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
     $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations' + '?q=' + JSON.stringify({"loc": { "$near": [latitude, longitude], "$maxDistance": radius}}) + '&apiKey=510d8ebde4b0a39e79ee5a83',
       function (data) {
           $("#debug-p").html("got ajax result");
-          $("#results").html(meetingJSONtoHTML(data, map));
+          addMarkers(data, map); 
 //        $("#results").html(JSON.stringify(data));
        }
     );
 };
 
-function meetingJSONtoHTML(data, map) {
+function addMarkers(data, map) {
     for (var meet in nearbyMeetings) {
        nearbyMeetings[meet].setMap(null);
     }
     
     nearbyMeetings = [];
-    var out = "<ul>";
     for (var m in data) {
         var meeting = data[m];
         var point = meeting.loc;
-        thisMeeting = meeting.title;
-        thisMeeting += ": ";
+        thisMeeting = "<span>";
+        thisMeeting += meeting.title;
+        thisMeeting += "<br>" + meeting.startTime + " on " + meeting.date + "<br>";
         thisMeeting += meeting.description;
-        thisMeeting += " (located at [" + point + "])";
+        thisMeeting += "</span>";
         
         var position = new google.maps.LatLng(point[0], point[1]);
         var marker = new google.maps.Marker({
@@ -101,17 +105,14 @@ function meetingJSONtoHTML(data, map) {
         });
         nearbyMeetings.push(marker);
         attachSecretMessage(marker, thisMeeting);
-        out += "<li>" + thisMeeting + "</li>";
     }
-    out += "</ul>";
-    return out;
 };
 
 // The five markers show a secret message when clicked
 // but that message is not within the marker's instance data
-function attachSecretMessage(marker, point) {
+function attachSecretMessage(marker, message) {
   var infowindow = new google.maps.InfoWindow({
-    content: point
+    content: message
   });
 
   google.maps.event.addListener(marker, 'click', function() {
@@ -119,5 +120,5 @@ function attachSecretMessage(marker, point) {
   });
 }
  
-var currMarker = new google.maps.Marker();
+var currMarker = null;
 var nearbyMeetings = [];
