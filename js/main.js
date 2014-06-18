@@ -44,6 +44,13 @@ function onDeviceReady()
 //    currMarker.setIcon("../images/Google Maps Marker Blue.png");
     currMarker = new google.maps.Marker({map: map, icon: 'http://maps.gpsvisualizer.com/google_maps/icons/google/blue.png'});
     
+    var circle = new google.maps.Circle({
+      map: map,
+      radius: 10000,    // 10km in metres
+      fillColor: '#AA0000'
+    });
+    circle.bindTo('center', currMarker, 'position');
+    
     attachSecretMessage(currMarker, "Current Position");
     
     var suc = function(p){
@@ -58,8 +65,8 @@ function onDeviceReady()
             var position = new google.maps.LatLng(currentLatitude, currentLongitude);
             currMarker.setPosition(position);
             map.setCenter(position);
-            
-            retrieveNearbyPoints(currentLatitude, currentLongitude, 1, map);
+           
+            retrieveNearbyPoints(currentLatitude, currentLongitude, 10./112, map);
         }
     };
     
