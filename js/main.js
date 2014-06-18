@@ -32,19 +32,9 @@ function onDeviceReady()
     intel.xdk.device.managePower(true,false);
 
     //hide splash screen
-    intel.xdk.device.hideSplashScreen();        
-}
+    intel.xdk.device.hideSplashScreen();       
     
-document.addEventListener("intel.xdk.device.ready",onDeviceReady,false); 
-      
-//Beep button functionality
-function beepOnce()
-{
-    intel.xdk.notification.beep(1);
-} 
-
-$(document).ready(function () {
-    
+    $("#headlineDIV").html("ooo");
     var options = { frequency: 150, adjustForRotation: false };
 
     //function that modifies the position of the arrow
@@ -59,26 +49,54 @@ $(document).ready(function () {
     intel.xdk.accelerometer.watchAcceleration(onsuccess, options);  
     
     var suc = function(p){
-        if (p.coords.latitude != undefined)
+        $("#debug-p").html("got gps result");
+        if (p.coords.latitude !== undefined)
         {
             var currentLatitude = p.coords.latitude;
             var currentLongitude = p.coords.longitude;
             $("#geo_lat").html("Geo Lat: " + currentLatitude);
             $("#geo_long").html("Geo Long: " + currentLongitude);
             
-            $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations'
-                      + '?q=' + JSON.stringify({"loc": { "$near": [currentLatitude, currentLongitude], "$maxDistance": 1}}) + '&apiKey=510d8ebde4b0a39e79ee5a83',
-              function (data) {
-                 $("#results").html(JSON.stringify(data)); showCurrentLocation(p);
-//                 alert("retrieved"); 
-              }
-            );
+            retrieveNearbyPoints(currentLatitude, currentLongitude, 1);
         }
 
     };
-    var fail = function(){ 
-        alert("geolocation failed"); 
-        getLocation();
+    var fail = function (error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
     };
-    intel.xdk.geolocation.watchPosition(suc, fail);
-});
+    navigator.geolocation.watchPosition(suc, fail);
+//    intel.xdk.geolocation.watchPosition(suc, fail);
+}
+    
+document.addEventListener("intel.xdk.device.ready",onDeviceReady,false); 
+      
+//Beep button functionality
+function beepOnce()
+{
+    intel.xdk.notification.beep(1); $("#headlineDIV").html("oo");
+} 
+
+function retrieveNearbyPoints(latitude, longitude, radius) {
+    $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations' + '?q=' + JSON.stringify({"loc": { "$near": [latitude, longitude], "$maxDistance": radius}}) + '&apiKey=510d8ebde4b0a39e79ee5a83',
+      function (data) {
+          $("#debug-p").html("got ajax result");
+          $("#results").html(transformMeetingJSON(data));
+//        $("#results").html(JSON.stringify(data));
+       }
+    );
+};
+
+function transformMeetingJSON(data) {
+    var out = "<ul>";
+    for (var m in data) {
+        out += "<li>";
+        out += data[m].title;
+        out += ": ";
+        out += data[m].description;
+        out += " (located at [" + data[m].loc + "])";
+        out += "</li>";
+    }
+    out += "</ul>";
+    return out;
+};
