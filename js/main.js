@@ -34,19 +34,14 @@ function onDeviceReady()
     //hide splash screen
     intel.xdk.device.hideSplashScreen();       
     
-    $("#headlineDIV").html("ooo");
-    var options = { frequency: 150, adjustForRotation: false };
-
-    //function that modifies the position of the arrow
-    function onsuccess(acceleration) 
-    {
-        var Acceleration_X = acceleration.x;
-        var Acceleration_Y = acceleration.y;
-        $("#acc_x").html("Acc X: " + Acceleration_X);
-        $("#acc_y").html("Acc Y: " + Acceleration_Y);
+    var mapOptions = {
+      zoom: 8,
+      center: new google.maps.LatLng(42.4, -71.3)
     };
 
-    intel.xdk.accelerometer.watchAcceleration(onsuccess, options);  
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    currMarker.setMap(map);
+    attachSecretMessage(currMarker, "Current Position");
     
     var suc = function(p){
         $("#debug-p").html("got gps result");
@@ -57,10 +52,13 @@ function onDeviceReady()
             $("#geo_lat").html("Geo Lat: " + currentLatitude);
             $("#geo_long").html("Geo Long: " + currentLongitude);
             
-            retrieveNearbyPoints(currentLatitude, currentLongitude, 1);
+            var position = new google.maps.LatLng(currentLatitude, currentLongitude);
+            currMarker.setPosition(position);
+            
+            retrieveNearbyPoints(currentLatitude, currentLongitude, 1, map);
         }
-
     };
+    
     var fail = function (error) {
         alert('code: '    + error.code    + '\n' +
               'message: ' + error.message + '\n');
@@ -70,33 +68,56 @@ function onDeviceReady()
 }
     
 document.addEventListener("intel.xdk.device.ready",onDeviceReady,false); 
-      
-//Beep button functionality
-function beepOnce()
-{
-    intel.xdk.notification.beep(1); $("#headlineDIV").html("oo");
-} 
 
-function retrieveNearbyPoints(latitude, longitude, radius) {
+function retrieveNearbyPoints(latitude, longitude, radius, map) {
     $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations' + '?q=' + JSON.stringify({"loc": { "$near": [latitude, longitude], "$maxDistance": radius}}) + '&apiKey=510d8ebde4b0a39e79ee5a83',
       function (data) {
           $("#debug-p").html("got ajax result");
-          $("#results").html(transformMeetingJSON(data));
+          $("#results").html(meetingJSONtoHTML(data, map));
 //        $("#results").html(JSON.stringify(data));
        }
     );
 };
 
-function transformMeetingJSON(data) {
+function meetingJSONtoHTML(data, map) {
+    for (var meet in nearbyMeetings) {
+       nearbyMeetings[meet].setMap(null);
+    }
+    
+    nearbyMeetings = [];
     var out = "<ul>";
     for (var m in data) {
-        out += "<li>";
-        out += data[m].title;
-        out += ": ";
-        out += data[m].description;
-        out += " (located at [" + data[m].loc + "])";
-        out += "</li>";
+        var meeting = data[m];
+        var point = meeting.loc;
+        thisMeeting = meeting.title;
+        thisMeeting += ": ";
+        thisMeeting += meeting.description;
+        thisMeeting += " (located at [" + point + "])";
+        
+        var position = new google.maps.LatLng(point[0], point[1]);
+        var marker = new google.maps.Marker({
+          position: position,
+          map: map
+        });
+        nearbyMeetings.push(marker);
+        attachSecretMessage(marker, thisMeeting);
+        out += "<li>" + thisMeeting + "</li>";
     }
     out += "</ul>";
     return out;
 };
+
+// The five markers show a secret message when clicked
+// but that message is not within the marker's instance data
+function attachSecretMessage(marker, point) {
+  var infowindow = new google.maps.InfoWindow({
+    content: point
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(marker.get('map'), marker);
+  });
+}
+ 
+var currMarker = new google.maps.Marker();
+var nearbyMeetings = [];
