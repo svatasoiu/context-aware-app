@@ -19,6 +19,10 @@ html {
     -ms-touch-action:none;
 }
 
+a.contact {
+    margin-left: 10px;
+}
+
 #map {
     height: 300px;
     width: 300px;

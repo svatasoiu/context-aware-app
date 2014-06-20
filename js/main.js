@@ -34,8 +34,32 @@ function onDeviceReady()
     //hide splash screen
     intel.xdk.device.hideSplashScreen();       
     
+    $(document).on("click", ".meeting-info", function() {
+        var meeting = nearbyMeetings[$(this).attr("meeting-id")];
+        var organizer = meeting.organizer;
+        // hide map
+        // display page with more detailed info on this meeting
+        $("#map-canvas").css("display","none");
+        
+        var content = "<div class='panel panel-primary'>";
+        content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style='padding-top: 12px; font-size: 24px;'>"+meeting.title+"</h1><a class='btn btn-primary btn-lg back-to-map pull-right'>Back to Map</a></div>";
+        content += "<div class='panel-body'>" + meeting.startTime + " on " + meeting.date + "<br>";
+        content += meeting.description;
+        content += "<br><div><h3>" + organizer.name+ " (Organizer) </h3><a class='contact'  href='tel:"+organizer.phoneNumber+"'>";
+        content += "<button class='btn btn-default btn-success btn-lg'><span class='glyphicon glyphicon-earphone'></span></button></a>";
+        content += "<a class='contact' href='mailto:"+organizer.email+"'><button class='btn btn-default btn-primary btn-lg'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
+        content += "</div></div>"; 
+        $("#meeting-page").html(content); 
+        $("#meeting-page").css("display","");
+    });
+    
+    $(document).on("click", ".back-to-map", function() {
+        $("#meeting-page").css("display","none");
+        $("#map-canvas").css("display","");
+    });
+  
     var mapOptions = {
-      zoom: 8,
+      zoom: 10,
       center: new google.maps.LatLng(42.4, -71.3)
     };
 
@@ -51,7 +75,7 @@ function onDeviceReady()
     });
     circle.bindTo('center', currMarker, 'position');
     
-    attachSecretMessage(currMarker, "Current Position");
+//    attachSecretMessage(currMarker, "Current Position");
     
     var suc = function(p){
         $("#debug-p").html("got gps result");
@@ -91,35 +115,39 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
 };
 
 function addMarkers(data, map) {
-    for (var meet in nearbyMeetings) {
-       nearbyMeetings[meet].setMap(null);
-    }
-    
-    nearbyMeetings = [];
-    for (var m in data) {
-        var meeting = data[m];
-        var point = meeting.loc;
-        thisMeeting = "<span>";
-        thisMeeting += meeting.title;
-        thisMeeting += "<br>" + meeting.startTime + " on " + meeting.date + "<br>";
-        thisMeeting += meeting.description;
-        thisMeeting += "</span>";
-        
-        var position = new google.maps.LatLng(point[0], point[1]);
-        var marker = new google.maps.Marker({
-          position: position,
-          map: map
-        });
-        nearbyMeetings.push(marker);
-        attachSecretMessage(marker, thisMeeting);
-    }
+  for (var meet in nearbyMeetings) {
+     nearbyMarkers[meet].setMap(null);
+  }
+
+  nearbyMeetings = [];
+  nearbyMarkers = []
+  for (var m in data) {
+    var meeting = data[m];
+    var point = meeting.loc;
+
+    var position = new google.maps.LatLng(point[0], point[1]);
+    var marker = new google.maps.Marker({
+      position: position,
+      map: map
+    });
+    nearbyMeetings.push(meeting);
+    nearbyMarkers.push(marker);
+    attachSecretMessage(marker, meeting, m);
+  }
 };
 
 // The five markers show a secret message when clicked
 // but that message is not within the marker's instance data
-function attachSecretMessage(marker, message) {
+function attachSecretMessage(marker, meeting, id) {
+  // modify message so that when clicked, it hides map-canvas 
+  // and displays info about this meeting
+  var content = "<span>";
+  content += meeting.title;
+  content += "<br>" + meeting.startTime + " on " + meeting.date + "<br>";
+  content += "<span class='meeting-info' meeting-id='"+id+"'>More info...</span>" 
+  content += "</span>";
   var infowindow = new google.maps.InfoWindow({
-    content: message
+    content: content
   });
 
   google.maps.event.addListener(marker, 'click', function() {
@@ -128,4 +156,5 @@ function attachSecretMessage(marker, message) {
 }
  
 var currMarker = null;
+var nearbyMarkers = [];
 var nearbyMeetings = [];
