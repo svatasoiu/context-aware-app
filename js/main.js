@@ -33,30 +33,6 @@ function onDeviceReady()
 
     //hide splash screen
     intel.xdk.device.hideSplashScreen();       
-    
-    $(document).on("click", ".meeting-info", function() {
-        var meeting = nearbyMeetings[$(this).attr("meeting-id")];
-        var organizer = meeting.organizer;
-        // hide map
-        // display page with more detailed info on this meeting
-        $("#map-canvas").css("display","none");
-        
-        var content = "<div class='panel panel-primary'>";
-        content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style='padding-top: 12px; font-size: 24px;'>"+meeting.title+"</h1><a class='btn btn-primary btn-lg back-to-map pull-right'>Back to Map</a></div>";
-        content += "<div class='panel-body'>" + meeting.startTime + " on " + meeting.date + "<br>";
-        content += meeting.description;
-        content += "<br><div><h3>" + organizer.name+ " (Organizer) </h3><a class='contact'  href='tel:"+organizer.phoneNumber+"'>";
-        content += "<button class='btn btn-default btn-success btn-lg'><span class='glyphicon glyphicon-earphone'></span></button></a>";
-        content += "<a class='contact' href='mailto:"+organizer.email+"'><button class='btn btn-default btn-primary btn-lg'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
-        content += "</div></div>"; 
-        $("#meeting-page").html(content); 
-        $("#meeting-page").css("display","");
-    });
-    
-    $(document).on("click", ".back-to-map", function() {
-        $("#meeting-page").css("display","none");
-        $("#map-canvas").css("display","");
-    });
   
     var mapOptions = {
       zoom: 10,
@@ -115,12 +91,11 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
 };
 
 function addMarkers(data, map) {
-  for (var meet in nearbyMeetings) {
+  for (var meet in nearbyMarkers) {
      nearbyMarkers[meet].setMap(null);
   }
 
-  nearbyMeetings = [];
-  nearbyMarkers = []
+  nearbyMarkers = [];
   for (var m in data) {
     var meeting = data[m];
     var point = meeting.loc;
@@ -130,31 +105,50 @@ function addMarkers(data, map) {
       position: position,
       map: map
     });
-    nearbyMeetings.push(meeting);
     nearbyMarkers.push(marker);
-    attachSecretMessage(marker, meeting, m);
+    attachSecretMessage(marker, meeting);
   }
 };
 
 // The five markers show a secret message when clicked
 // but that message is not within the marker's instance data
-function attachSecretMessage(marker, meeting, id) {
-  // modify message so that when clicked, it hides map-canvas 
-  // and displays info about this meeting
-  var content = "<span>";
-  content += meeting.title;
-  content += "<br>" + meeting.startTime + " on " + meeting.date + "<br>";
-  content += "<span class='meeting-info' meeting-id='"+id+"'>More info...</span>" 
-  content += "</span>";
-  var infowindow = new google.maps.InfoWindow({
-    content: content
-  });
+function attachSecretMessage(marker, meeting) {
+    // modify message so that when clicked, it hides map-canvas 
+    // and displays info about this meeting
+    
+    var organizer = meeting.organizer;
+    var content = "<div class='panel panel-primary'>";
+    content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style=''>"+meeting.title+"</h1><br><span class='panel-title pull-left'>" +meeting.startTime + " on " + meeting.date + "</span></div>";//<a class='btn btn-primary btn-sm back-to-map pull-right'>Back to Map</a></div>";
+    content += "<div class='panel-body'>";
+    content += meeting.description;
+    if (organizer) { 
+        content += "<br><div><span>" + (organizer ? organizer.name : "")+ " (Organizer) </span><a class='contact'  href='tel:"+(organizer ? organizer.phoneNumber : "")+"'>";
+        content += "<button class='btn btn-default btn-success btn-lg'><span style='width:10px;height:10px;' class='glyphicon glyphicon-earphone'></span></button></a>";
+        content += "<a class='contact' href='mailto:"+(organizer ? organizer.email:"")+"'><button class='btn btn-default btn-primary btn-lg'><span style='width:10px;height:10px;' class='glyphicon glyphicon-envelope'></span></button></a></div>";
+        content += "</div></div>"; 
+    }
+//    var infowindow = new google.maps.InfoWindow({
+//        content: content
+//    });
 
-  google.maps.event.addListener(marker, 'click', function() {
-    infowindow.open(marker.get('map'), marker);
-  });
+    google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.setContent(content);
+        infoWindow.open(marker.get('map'), marker);
+    });
 }
  
 var currMarker = null;
+var infoWindow = new InfoBox({
+			 disableAutoPan: false
+			,zIndex: null
+			,boxStyle: { 
+                opacity: 1.0
+			 }
+			,closeBoxMargin: "10px 2px 2px 2px"
+			,closeBoxURL: "http://www.google.com/intl/en_us/mapfiles/close.gif"
+			,infoBoxClearance: new google.maps.Size(1, 1)
+			,isHidden: false
+			,pane: "floatPane"
+			,enableEventPropagation: false
+		});
 var nearbyMarkers = [];
-var nearbyMeetings = [];
