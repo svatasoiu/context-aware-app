@@ -123,8 +123,8 @@ function attachSecretMessage(marker, meeting) {
     content += meeting.description;
     if (organizer) { 
         content += "<br><div><span>" + (organizer ? organizer.name : "")+ " (Organizer) </span><a class='contact'  href='tel:"+(organizer ? organizer.phoneNumber : "")+"'>";
-        content += "<button class='btn btn-default btn-success btn-lg'><span style='width:10px;height:10px;' class='glyphicon glyphicon-earphone'></span></button></a>";
-        content += "<a class='contact' href='mailto:"+(organizer ? organizer.email:"")+"'><button class='btn btn-default btn-primary btn-lg'><span style='width:10px;height:10px;' class='glyphicon glyphicon-envelope'></span></button></a></div>";
+        content += "<button class='btn btn-default btn-success'><span class='glyphicon glyphicon-earphone'></span></button></a>";
+        content += "<a class='contact' href='mailto:"+(organizer ? organizer.email:"")+"'><button class='btn btn-default btn-primary'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
         content += "</div></div>"; 
     }
 //    var infowindow = new google.maps.InfoWindow({
