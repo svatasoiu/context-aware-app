@@ -1,0 +1,9 @@
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\ContextAwareMongoService.dll.config
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\ContextAwareMongoService.dll
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\ContextAwareMongoService.pdb
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\MongoDB.Bson.dll
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\MongoDB.Driver.dll
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\MongoDB.Bson.xml
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\MongoDB.Driver.xml
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\obj\Release\ContextAwareMongoService.dll
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\obj\Release\ContextAwareMongoService.pdb
