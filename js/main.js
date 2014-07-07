@@ -122,9 +122,9 @@ function attachSecretMessage(marker, meeting) {
     content += "<div class='panel-body'>";
     content += meeting.description;
     if (organizer) { 
-        content += "<br><div><span>" + (organizer ? organizer.name : "")+ " (Organizer) </span><a class='contact'  href='tel:"+(organizer ? organizer.phoneNumber : "")+"'>";
+        content += "<br><div><span>" + organizer.name + " (Organizer) </span><a class='contact'  href='tel:"+ organizer.phoneNumber +"'>";
         content += "<button class='btn btn-default btn-success'><span class='glyphicon glyphicon-earphone'></span></button></a>";
-        content += "<a class='contact' href='mailto:"+(organizer ? organizer.email:"")+"'><button class='btn btn-default btn-primary'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
+        content += "<a class='contact' href='mailto:"+ organizer.email +"'><button class='btn btn-default btn-primary'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
         content += "</div></div>"; 
     }
 //    var infowindow = new google.maps.InfoWindow({
