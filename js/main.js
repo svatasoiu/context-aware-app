@@ -3,6 +3,10 @@
 /*
  * This function runs once the page is loaded, but the JavaScript bridge library is not yet active.
  */
+var distance;
+var currentLatitude;
+var currentLongitude;
+
 var init = function () {
 };
 
@@ -36,7 +40,7 @@ function onDeviceReady()
   
     var mapOptions = {
       zoom: 10,
-      center: new google.maps.LatLng(42.4, -71.3)
+      center: new google.maps.LatLng(42.4043, -71.2813)
     };
 
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
@@ -57,8 +61,8 @@ function onDeviceReady()
         $("#debug-p").html("got gps result");
         if (p.coords.latitude !== undefined)
         {
-            var currentLatitude = p.coords.latitude;
-            var currentLongitude = p.coords.longitude;
+            currentLatitude = p.coords.latitude;
+            currentLongitude = p.coords.longitude;
             $("#geo_lat").html("Geo Lat: " + currentLatitude);
             $("#geo_long").html("Geo Long: " + currentLongitude);
             
@@ -68,6 +72,7 @@ function onDeviceReady()
            
             retrieveNearbyPoints(currentLatitude, currentLongitude, 10./112, map);
         }
+        
     };
     
     var fail = function (error) {
@@ -90,6 +95,55 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
     );
 };
 
+function getDistance(point) {
+
+    //Gets the distance from mms, stores it in the variable distance
+    var EarthRadius = 6371;
+
+    var MeetLat = point[0];
+    var MeetLong = point[1];
+    
+    var userLat = (currentLatitude * 2 * Math.PI) / 360;
+    var mmsLat = (MeetLat * 2 * Math.PI) / 360;
+    var diffLat = ((MeetLat - currentLatitude) * 2 * Math.PI) / 360;
+    var diffLong = ((MeetLong - currentLongitude) * 2 * Math.PI) / 360;
+    var EArc = ((Math.sin(diffLat/2) * Math.sin(diffLat/2)) +
+            (Math.cos(userLat) * Math.cos(mmsLat) *
+            Math.sin(diffLong/2) * Math.sin(diffLong/2)));
+
+    var Echord = 2 * Math.atan2(Math.sqrt(EArc), Math.sqrt(1-EArc));
+
+    var kmdistance = EarthRadius * Echord; 
+    
+    if (kmdistance < 0.5) {
+
+        if (((Math.round(kmdistance * 10000))/10) == '1') {
+
+            distance = "Distance: " + ((Math.round(kmdistance * 10000))/10) + " meter";
+        }
+        else {
+
+            distance = "Distance: " + ((Math.round(kmdistance * 10000))/10) + " meters";
+        }
+
+    } else {
+
+        if (((Math.round(kmdistance * 10))/10) == '1') {
+
+           distance = "Distance: " + ((Math.round(kmdistance * 10))/10) + " kilometer";
+        }
+        else {
+
+            distance = "Distance: " + ((Math.round(kmdistance * 10))/10) + " kilometers";
+        }
+    }    
+    
+    if (kmdistance < 0.2) {
+        //DO STUFF LIKE LOAD MEETINGS, SEND PUSH NOTIFICATIONS, ETC.
+    }   
+
+}
+
 function addMarkers(data, map) {
   for (var meet in nearbyMarkers) {
      nearbyMarkers[meet].setMap(null);
@@ -101,14 +155,20 @@ function addMarkers(data, map) {
     var point = meeting.loc;
 
     var position = new google.maps.LatLng(point[0], point[1]);
+      
     var marker = new google.maps.Marker({
       position: position,
       map: map
     });
+    
+    //Gets the distance to each meeting to display when meeting is clicked
+    getDistance(point);
+      
     nearbyMarkers.push(marker);
     attachSecretMessage(marker, meeting);
   }
 };
+
 
 // The five markers show a secret message when clicked
 // but that message is not within the marker's instance data
@@ -118,13 +178,13 @@ function attachSecretMessage(marker, meeting) {
     
     var organizer = meeting.organizer;
     var content = "<div class='panel panel-primary'>";
-    content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style=''>"+meeting.title+"</h1><br><span class='panel-title pull-left'>" +meeting.startTime + " on " + meeting.date + "</span></div>";//<a class='btn btn-primary btn-sm back-to-map pull-right'>Back to Map</a></div>";
+    content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style=''>"+meeting.title+"</h1><br><span class='panel-title pull-left'>" +meeting.startTime + " on " + meeting.date + "<br>" + distance + "</span></div>";//<a class='btn btn-primary btn-sm back-to-map pull-right'>Back to Map</a></div>";
     content += "<div class='panel-body'>";
     content += meeting.description;
     if (organizer) { 
-        content += "<br><div><span>" + (organizer ? organizer.name : "")+ " (Organizer) </span><a class='contact'  href='tel:"+(organizer ? organizer.phoneNumber : "")+"'>";
+        content += "<br><div><span>" + organizer.name + " (Organizer) </span><a class='contact'  href='tel:"+ organizer.phoneNumber +"'>";
         content += "<button class='btn btn-default btn-success'><span class='glyphicon glyphicon-earphone'></span></button></a>";
-        content += "<a class='contact' href='mailto:"+(organizer ? organizer.email:"")+"'><button class='btn btn-default btn-primary'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
+        content += "<a class='contact' href='mailto:"+ organizer.email +"'><button class='btn btn-default btn-primary'><span class='glyphicon glyphicon-envelope'></span></button></a></div>";
         content += "</div></div>"; 
     }
 //    var infowindow = new google.maps.InfoWindow({
