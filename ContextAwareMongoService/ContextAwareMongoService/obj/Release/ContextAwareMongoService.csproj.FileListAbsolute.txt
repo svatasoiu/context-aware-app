@@ -7,3 +7,4 @@ C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\M
 C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\bin\MongoDB.Driver.xml
 C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\obj\Release\ContextAwareMongoService.dll
 C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\obj\Release\ContextAwareMongoService.pdb
+C:\git\context-aware-app\ContextAwareMongoService\ContextAwareMongoService\obj\Release\ContextAwareMongoService.csprojResolveAssemblyReference.cache
