@@ -86,6 +86,7 @@ function onDeviceReady()
 document.addEventListener("intel.xdk.device.ready",onDeviceReady,false); 
 
 function retrieveNearbyPoints(latitude, longitude, radius, map) {
+    // mongo query
     $.getJSON('https://api.mongolab.com/api/1/databases/test-geospatial/collections/locations' + '?q=' + JSON.stringify({"loc": { "$near": [latitude, longitude], "$maxDistance": radius}}) + '&apiKey=510d8ebde4b0a39e79ee5a83',
       function (data) {
           $("#debug-p").html("got ajax result");
@@ -93,6 +94,25 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
 //        $("#results").html(JSON.stringify(data));
        }
     );
+    
+    // sql query
+    $.ajax({
+        type: 'POST',
+        url: 'http://172.16.151.35:4041/ContextService.svc',
+        dataType: 'xml',
+        contentType: 'text/xml; charset=utf-8',
+        data: '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body xmlns:m="http://tempuri.org/"><m:GetMeetingsWithinRadius><m:lat>'+latitude+'</m:lat><m:lon>'+longitude+'</m:lon><m:radius>10000</m:radius></m:GetMeetingsWithinRadius></soap:Body></soap:Envelope>',
+        beforeSend: function (xhr)
+        {
+        xhr.setRequestHeader('SOAPAction', 'http://tempuri.org/IContextService/GetMeetingsWithinRadius');
+        },
+        success: function(resp, type, xhr) {
+            alert(xhr.responseText);
+            alert($(xhr).find("MeetingID").text());
+        },
+        error: function(err) { alert(err.status + ' ' + err.statusText); }
+   });
+    
 };
 
 function getDistance(point) {
