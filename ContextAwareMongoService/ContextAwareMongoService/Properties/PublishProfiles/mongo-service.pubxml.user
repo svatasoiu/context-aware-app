@@ -10,7 +10,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/ContextAwareMongoService.dll">
-      <publishTime>07/07/2014 16:38:13</publishTime>
+      <publishTime>07/08/2014 10:29:11</publishTime>
     </File>
     <File Include="bin/Microsoft.SqlServer.Types.dll">
       <publishTime>07/07/2014 14:55:44</publishTime>
@@ -22,7 +22,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/25/2014 15:42:05</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
-      <publishTime>07/07/2014 16:31:01</publishTime>
+      <publishTime>07/08/2014 10:24:50</publishTime>
     </File>
     <File Include="bin/SqlServerTypes/x64/msvcr100.dll">
       <publishTime>07/07/2014 14:55:44</publishTime>
@@ -43,7 +43,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/25/2014 16:30:18</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>07/07/2014 16:37:58</publishTime>
+      <publishTime>07/08/2014 10:24:51</publishTime>
     </File>
     <File Include="SqlServerTypes/readme.htm">
       <publishTime>07/07/2014 14:55:44</publishTime>

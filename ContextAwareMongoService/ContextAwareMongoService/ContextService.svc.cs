@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -8,6 +9,8 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Xml.Linq;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
 using Microsoft.SqlServer.Types;
 
 namespace ContextAwareService
@@ -43,7 +46,7 @@ namespace ContextAwareService
             spatialQuery.Fill(res);
             con.Close();
 
-            return res.GetXml();
+            return JsonConvert.SerializeObject(res, Formatting.None);
         }
 
         public bool ValidateUser(String username, String password)
