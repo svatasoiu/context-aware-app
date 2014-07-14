@@ -114,6 +114,57 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
     
 };
 
+function insertUser() {
+    var username = document.getElementById("uname").value;   
+    var password = document.getElementById("pword").value;
+    
+    $.ajax({
+        type: 'POST',
+        url: 'http://172.16.151.35:4041/ContextService.svc',
+        dataType: 'xml',
+        contentType: 'text/xml; charset=utf-8',
+        data: '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body xmlns:m="http://tempuri.org/"><m:AddUser><m:username>'+username+'</m:username><m:password>'+password+'</m:password></m:AddUser></soap:Body></soap:Envelope>',
+        beforeSend: function (xhr)
+        {
+            xhr.setRequestHeader('SOAPAction', 'http://tempuri.org/IContextService/AddUser');
+        },
+        success: function(resp, type, xhr) {
+            var jsonResponse = JSON.parse($(xhr.responseXML).find("AddUserResult").text());
+            alert(JSON.stringify(jsonResponse));
+        },
+        error: function(err) { 
+            alert(err.status + ' ' + err.statusText); 
+        }
+   });
+};
+
+function validateUser(username, password) {
+    $.ajax({
+        type: 'POST',
+        url: 'http://172.16.151.35:4041/ContextService.svc',
+        dataType: 'xml',
+        contentType: 'text/xml; charset=utf-8',
+        data: '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body xmlns:m="http://tempuri.org/"><m:ValidateUser><m:username>'+username+'</m:username><m:password>'+password+'</m:password></m:ValidateUser></soap:Body></soap:Envelope>',
+        beforeSend: function (xhr)
+        {
+            xhr.setRequestHeader('SOAPAction', 'http://tempuri.org/IContextService/ValidateUser');
+        },
+        success: function(resp, type, xhr) {
+            var jsonResponse = JSON.parse($(xhr.responseXML).find("ValidateUserResult").text());
+            
+            if (JSON.stringify(jsonResponse) === "true") {
+                var logindiv = document.getElementById("login").style.zIndex = -1;
+                document.getElementById("unameerror").style.visibility = "hidden";  
+            } else {
+                document.getElementById("unameerror").style.visibility = "visible";   
+            }
+        },
+        error: function(err) { 
+            alert(err.status + ' ' + err.statusText); 
+        }
+   });
+};
+
 //function getDistance(point) {
 //
 //    //Gets the distance from mms, stores it in the variable distance
@@ -173,25 +224,7 @@ function setTopZ() {
 function checkInput() {
     var uname = document.getElementById("uname").value;   
     var pword = document.getElementById("pword").value;
-    
-    if (uname != "test") {
-        document.getElementById("unameerror").style.visibility = "visible";
-    }
-    else {
-        document.getElementById("unameerror").style.visibility = "hidden";        
-    }
-    
-    if (pword != "test") {
-        document.getElementById("pworderror").style.visibility = "visible";        
-    }
-    else {
-        document.getElementById("pworderror").style.visibility = "hidden";        
-    }
-    
-    if ((uname == "test") && (pword == "test")) {
-        var logindiv = document.getElementById("login").style.zIndex = -1;
-    }
-
+    validateUser(uname, pword);
 }
 
 function addMarkers(data, map) {

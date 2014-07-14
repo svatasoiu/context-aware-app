@@ -56,20 +56,24 @@
                 <li>
                     <h1>Sign In</h1>
                 </li>
+                <div id="unameerror" class = "uname_error">No such username/password combo found</div>
                 <li>
-                    Username: <div id="unameerror" class = "uname_error">Please enter a valid username</div>
+                    Username: 
                 </li>
                 <li>
                     <input type = "text" id = "uname"> 
                 </li>
                 <li>
-                    Password: <div id="pworderror" class = "pword_error">Please enter a valid password</div>
+                    Password:
                 </li>
                 <li>
                     <input type = "password" id = "pword">
                 </li>
                 <li>
                     <button type = "button" onclick = "checkInput()">Submit</button>
+                </li>
+                <li>
+                    <button type = "button" onclick = "insertUser()">Insert</button>
                 </li>
             </ul>
         </div>
