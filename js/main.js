@@ -130,7 +130,13 @@ function insertUser() {
         },
         success: function(resp, type, xhr) {
             var jsonResponse = JSON.parse($(xhr.responseXML).find("AddUserResult").text());
-            alert(JSON.stringify(jsonResponse));
+            
+            if (JSON.stringify(jsonResponse) === "true") {
+                $("#loginError").css("visibility", "hidden");  
+            } else {
+                $("#loginError").css("visibility", "visible");
+                $("#loginError").html("User " + username + " already exists");
+            }
         },
         error: function(err) { 
             alert(err.status + ' ' + err.statusText); 
@@ -153,10 +159,11 @@ function validateUser(username, password) {
             var jsonResponse = JSON.parse($(xhr.responseXML).find("ValidateUserResult").text());
             
             if (JSON.stringify(jsonResponse) === "true") {
-                var logindiv = document.getElementById("login").style.zIndex = -1;
-                document.getElementById("unameerror").style.visibility = "hidden";  
+                var logindiv = $("#login").css("zIndex", -1);
+                $("#loginError").css("visibility", "hidden");  
             } else {
-                document.getElementById("unameerror").style.visibility = "visible";   
+                $("#loginError").css("visibility", "visible");
+                $("#loginError").html("No such user/password combo exists");
             }
         },
         error: function(err) { 
