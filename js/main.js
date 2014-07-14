@@ -173,10 +173,23 @@ function setTopZ() {
 function checkInput() {
     var uname = document.getElementById("uname").value;   
     var pword = document.getElementById("pword").value;
-    if (uname == "test") {
-        if(pword == "test") {
-            var logindiv = document.getElementById("login").style.zIndex = -1;
-        }
+    
+    if (uname != "test") {
+        document.getElementById("unameerror").style.visibility = "visible";
+    }
+    else {
+        document.getElementById("unameerror").style.visibility = "hidden";        
+    }
+    
+    if (pword != "test") {
+        document.getElementById("pworderror").style.visibility = "visible";        
+    }
+    else {
+        document.getElementById("pworderror").style.visibility = "hidden";        
+    }
+    
+    if ((uname == "test") && (pword == "test")) {
+        var logindiv = document.getElementById("login").style.zIndex = -1;
     }
 
 }

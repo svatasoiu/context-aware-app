@@ -91,6 +91,18 @@ div.login ul li button{
 
 }
 
+.uname_error {
+    color: red;
+    visibility: hidden;
+    float: left;
+}
+
+.pword_error {
+    color: red;
+    visibility: hidden;
+    float: left;
+}
+
 .clear { 
     clear:both; 
 }
