@@ -163,6 +163,37 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
 //
 //}
 
+//Sets the login div to a higher z-index than the map, essentially hiding the map
+function setTopZ() {
+    document.getElementById("login").style.zIndex = "1";
+}
+
+//Check username and password input, show map if good 
+    //NEED TO MAKE THIS CONNECT TO DBASE WITH USER INFO, CHECK FOR USERS, AND OUTPUT USER'S MEETING INFO ON MAP
+function checkInput() {
+    var uname = document.getElementById("uname").value;   
+    var pword = document.getElementById("pword").value;
+    
+    if (uname != "test") {
+        document.getElementById("unameerror").style.visibility = "visible";
+    }
+    else {
+        document.getElementById("unameerror").style.visibility = "hidden";        
+    }
+    
+    if (pword != "test") {
+        document.getElementById("pworderror").style.visibility = "visible";        
+    }
+    else {
+        document.getElementById("pworderror").style.visibility = "hidden";        
+    }
+    
+    if ((uname == "test") && (pword == "test")) {
+        var logindiv = document.getElementById("login").style.zIndex = -1;
+    }
+
+}
+
 function addMarkers(data, map) {
   for (var meet in nearbyMarkers) {
      nearbyMarkers[meet].setMap(null);
