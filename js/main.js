@@ -35,7 +35,7 @@ function onDeviceReady()
     intel.xdk.device.hideSplashScreen();       
   
     var mapOptions = {
-      zoom: 8,
+      zoom: 9,
       center: new google.maps.LatLng(42.4043, -71.2813)
     };
 
@@ -90,7 +90,7 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
 ////        $("#results").html(JSON.stringify(data));
 //       }
 //    );
-    
+//    alert("Sending request to web service");
     // sql query
     $.ajax({
         type: 'POST',
@@ -105,7 +105,7 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
         success: function(resp, type, xhr) {
             var jsonResponse = JSON.parse($(xhr.responseXML).find("GetMeetingsWithinRadiusResult").text())["Table"];
             addMarkers(jsonResponse, map);
-            alert(JSON.stringify(jsonResponse));
+//            alert(JSON.stringify(jsonResponse));
         },
         error: function(err) { 
             alert(err.status + ' ' + err.statusText); 
@@ -198,7 +198,7 @@ function attachSecretMessage(marker, meeting) {
     
 //    var organizer = meeting.organizer;
     var content = "<div class='panel panel-primary'>";
-    content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style=''>"+meeting.Title+"</h1><br><span class='panel-title pull-left'>" +meeting.StartTime + " on " + meeting.Date + "<br>" + meeting.Distance.toString().split(".")[0] + "m</span></div>";//<a class='btn btn-primary btn-sm back-to-map pull-right'>Back to Map</a></div>";
+    content += "<div class='panel-heading clearfix'><h1 class='panel-title pull-left' style=''>"+meeting.Title+"</h1><br><span class='panel-title pull-left'>" +meeting.StartTime + " on " + meeting.Date.substring(0, 10) + "<br>" + meeting.Distance.toString().split(".")[0] + "m away</span></div>";//<a class='btn btn-primary btn-sm back-to-map pull-right'>Back to Map</a></div>";
     content += "<div class='panel-body'>";
     content += meeting.Description;
 //    if (organizer) { 
