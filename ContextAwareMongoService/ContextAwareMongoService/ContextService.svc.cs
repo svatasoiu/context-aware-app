@@ -21,30 +21,30 @@ namespace ContextAwareService
     {
         public bool AddUser(String username, String password)
         {
-            try
-            {
+            //try
+            //{
                 Guid guid = System.Guid.NewGuid();
                 string hashPassword = HashSHA1(password + guid.ToString());
 
                 SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["connString"]);
-                using (SqlDataAdapter cmd = new SqlDataAdapter("p_AddUser", con))
+                using (SqlCommand cmd = new SqlCommand("p_AddUser", con))
                 {
-                    cmd.InsertCommand.Parameters.AddWithValue("@username", username);
-                    cmd.InsertCommand.Parameters.AddWithValue("@password", hashPassword);
-                    cmd.InsertCommand.Parameters.AddWithValue("@guid", guid);
-                    cmd.InsertCommand.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@username", username);
+                    cmd.Parameters.AddWithValue("@password", hashPassword);
+                    cmd.Parameters.AddWithValue("@guid", guid);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
                     con.Open();
-                    cmd.InsertCommand.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
                     con.Close();
                 }
 
                 return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            } 
+            //}
+            //catch (Exception)
+            //{
+            //    return false;
+            //} 
         }
 
         public string GetMeetingsWithinRadius(double lat, double lon, double radius)
