@@ -47,10 +47,38 @@
         <script src="intelxdk.js"></script>
         <script src='cordova.js'></script> 
         <script src='xhr.js'></script>
+        <script src="js/services.js" type="text/javascript"></script>
         <script src="js/main.js" type="text/javascript"></script>
     </head>
     
-    <body>
-        <div id="map-canvas"></div>
+    <body onload = "setTopZ()">
+        <div id="login" class="login">
+            <ul>
+                <li>
+                    <h1>Sign In</h1>
+                </li>
+                <li>
+                    Username: 
+                </li>
+                <li>
+                    <input type = "text" id = "uname"> 
+                </li>
+                <li>
+                    Password:
+                </li>
+                <li>
+                    <input type = "password" id = "pword">
+                </li>
+                <div id="loginError" class = "error"></div>
+                <li>
+                    <button type = "button" onclick = "checkInput()">Submit</button>
+                </li>
+                <li>
+                    <button type = "button" onclick = "insertUser()">Insert</button>
+                </li>
+            </ul>
+        </div>
+        <div id="map-canvas">
+        </div>
     </body>
 </html>
