@@ -27,14 +27,15 @@ namespace ContextAwareService
                 string hashPassword = HashSHA1(password + guid.ToString());
 
                 SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["connString"]);
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES (@username, @password, @guid)", con))
+                using (SqlDataAdapter cmd = new SqlDataAdapter("p_AddUser", con))
                 {
-                    cmd.Parameters.AddWithValue("@username", username);
-                    cmd.Parameters.AddWithValue("@password", hashPassword);
-                    cmd.Parameters.AddWithValue("@guid", guid);
+                    cmd.InsertCommand.Parameters.AddWithValue("@username", username);
+                    cmd.InsertCommand.Parameters.AddWithValue("@password", hashPassword);
+                    cmd.InsertCommand.Parameters.AddWithValue("@guid", guid);
+                    cmd.InsertCommand.CommandType = CommandType.StoredProcedure;
 
                     con.Open();
-                    cmd.ExecuteNonQuery();
+                    cmd.InsertCommand.ExecuteNonQuery();
                     con.Close();
                 }
 
@@ -50,7 +51,7 @@ namespace ContextAwareService
         {
             SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["connString"]);
             con.Open();
-            SqlDataAdapter spatialQuery = new SqlDataAdapter("GetMeetingsWithinRadius", con);
+            SqlDataAdapter spatialQuery = new SqlDataAdapter("p_GetMeetingsWithinRadius", con);
 
             SqlParameter pointParam = new SqlParameter("@point", SqlDbType.Udt);
             pointParam.UdtTypeName = "Geography";
@@ -58,7 +59,7 @@ namespace ContextAwareService
 
             SqlParameter radParam = new SqlParameter("@radius", SqlDbType.Float);
             radParam.Value = radius;
-
+            
             spatialQuery.SelectCommand.Parameters.Add(pointParam);
             spatialQuery.SelectCommand.Parameters.Add(radParam);
             spatialQuery.SelectCommand.CommandType = CommandType.StoredProcedure;
@@ -73,9 +74,10 @@ namespace ContextAwareService
         public bool ValidateUser(String username, String password)
         {
             SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.AppSettings["connString"]);
-            using (SqlDataAdapter cmd = new SqlDataAdapter("SELECT * FROM Users WHERE Username=@username", con))
+            using (SqlDataAdapter cmd = new SqlDataAdapter("p_GetUserByUsername", con))
             {
                 cmd.SelectCommand.Parameters.AddWithValue("@username", username);
+                cmd.SelectCommand.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 DataSet res = new DataSet();
                 cmd.Fill(res);
