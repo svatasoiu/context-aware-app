@@ -14,7 +14,7 @@ namespace ContextAwareService
     {
 
         [OperationContract]
-        string AddUser(String username, String password);
+        bool AddUser(String username, String password);
 
         [OperationContract]
         [WebInvoke(Method="POST", ResponseFormat=WebMessageFormat.Xml)]

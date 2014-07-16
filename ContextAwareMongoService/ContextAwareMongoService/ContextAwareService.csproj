@@ -85,7 +85,9 @@
     </Content>
     <Content Include="ContextService.svc" />
     <Content Include="SqlServerTypes\readme.htm" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContextService.svc.cs">
@@ -100,7 +102,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Properties\PublishProfiles\mongo-service.pubxml" />
+    <None Include="Properties\PublishProfiles\context-service-local.pubxml" />
+    <None Include="Properties\PublishProfiles\context-service-dev.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
