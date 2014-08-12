@@ -52,6 +52,8 @@ function onDeviceReady()
     circle.bindTo('center', currMarker, 'position');
     
     var suc = function(p){
+//        alert("got GPS update!");
+        
         $("#debug-p").html("got gps result");
         if (p.coords.latitude !== undefined)
         {
@@ -73,6 +75,7 @@ function onDeviceReady()
         alert('code: '    + error.code    + '\n' +
               'message: ' + error.message + '\n');
     };
+    
     navigator.geolocation.watchPosition(suc, fail);
 //    intel.xdk.geolocation.watchPosition(suc, fail);
 }

@@ -1,9 +1,16 @@
+LOCALTESTING = false;
+
+SERVICEURL = LOCALTESTING ? 'http://172.16.151.35:4041/ContextService.svc' 
+                          : 'http://dev.mms.org:9000/MobileMeetingsData/ContextService.svc';
+NAMESPACE = 'http://tempuri.org/';
+INTERFACE = 'IContextService';
 // returns 
 function retrieveNearbyPoints(latitude, longitude, radius, map) {
+//    alert("Sending request to GetMeetingsWithinRadius service");
     getSOAPResponse(
-        'http://172.16.151.35:4041/ContextService.svc', 'GetMeetingsWithinRadius', 
+        SERVICEURL, 'GetMeetingsWithinRadius', 
         {lat:latitude, lon:longitude, radius:radius}, 
-        'http://tempuri.org/', 'IContextService', 
+        NAMESPACE, INTERFACE, 
         function(resp, type, xhr) {
             var jsonResponse = JSON.parse($(xhr.responseXML).find("GetMeetingsWithinRadiusResult").text())["Table"];
             addMarkers(jsonResponse, map);
@@ -17,14 +24,15 @@ function retrieveNearbyPoints(latitude, longitude, radius, map) {
 
 function insertUser() {
     getSOAPResponse(
-        'http://172.16.151.35:4041/ContextService.svc', 'AddUser', 
+        SERVICEURL, 'AddUser', 
         {username:document.getElementById("uname").value,
          password:document.getElementById("pword").value}, 
-        'http://tempuri.org/', 'IContextService', 
+        NAMESPACE, INTERFACE, 
         function(resp, type, xhr) {
             var jsonResponse = JSON.parse($(xhr.responseXML).find("AddUserResult").text());
-
+//            alert(JSON.stringify(jsonResponse));
             if (JSON.stringify(jsonResponse) === "true") {
+//                alert("Added User!");
                 $("#loginError").css("visibility", "hidden");  
             } else {
                 $("#loginError").css("visibility", "visible");
@@ -40,9 +48,9 @@ function insertUser() {
 
 function validateUser(username, password) {
     getSOAPResponse(
-        'http://172.16.151.35:4041/ContextService.svc', 'ValidateUser', 
+        SERVICEURL, 'ValidateUser', 
         {username:username,password:password}, 
-        'http://tempuri.org/', 'IContextService', 
+        NAMESPACE, INTERFACE, 
         function(resp, type, xhr) {
             var jsonResponse = JSON.parse($(xhr.responseXML).find("ValidateUserResult").text());
 
@@ -53,8 +61,9 @@ function validateUser(username, password) {
                 $("#loginError").css("visibility", "visible");
                 $("#loginError").html("No such user/password combo exists");
             }
-        }, function(err) { 
-            alert(err.status + ' ' + err.statusText); 
+        }, function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.responseText);
+            alert(thrownError);
         }
     );
 };
